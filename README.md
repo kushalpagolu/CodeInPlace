@@ -33,12 +33,13 @@
 
 #### Type 4 and press enter.
 
-![Screen Shot 2021-06-03 at 4.20.15 AM.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1622708493895/IVBf4mRJL.png)
+![Screen Shot 2021-06-03 at 2.11.40 AM.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1622708780090/0bTnyPGnz.png)
+
 
 ####Displays a scatter_polar chart -  In a polar scatter plot, each row of `data_frame` is represented by a symbol mark in polar coordinates.
 
 
-![Screen Shot 2021-06-03 at 1.42.10 AM.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1622699752994/jLYS1IH4P.png)
+![Screen Shot 2021-06-03 at 4.20.15 AM.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1622708493895/IVBf4mRJL.png)
 
 
 #### Type 5 and press enter. Then type in the country name to see the latest Covid-19 cases details in a map.
