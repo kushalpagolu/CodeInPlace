@@ -10,7 +10,7 @@ import sys
 
 
 def main():
-    print('Welcome to Covid 19 Data and Vaccination Visualisation Project')
+    print('Welcome to Covid 19 Data and Vaccination Visualization Project')
     data2 = pd.read_csv('sortedbytotalvaccines.csv')
     data4 = pd.read_csv('worldcovidcases.csv')
     df = data2[["vaccines", "country"]]
