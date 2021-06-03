@@ -1,5 +1,5 @@
 # CodeInPlace
-Final Assignment Project submitted for Code in Place Stanford Program
+## Final Assignment Project submitted for Code in Place Stanford Program
 
 ### Run the project.py file and you are presented with below options.
 
