@@ -109,7 +109,7 @@ def main():
             # delete world cases row
             fig = px.scatter_polar(df, r="Total Cases_text", size='Total Cases_text', hover_name='Country_text',
                                    hover_data=['Total Cases_text', 'Total Deaths_text'], color='Total Cases_text',
-                                   color_discrete_sequence=px.colors.qualitative.Prism)
+                                   color_discrete_sequence=px.colors.qualitative.Prism, direction="clockwise", start_angle=360)
             fig.show()
         except Exception as inst:
             print("Oops!", sys.exc_info()[0], "occurred.", inst)
