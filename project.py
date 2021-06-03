@@ -14,7 +14,6 @@ def main():
     data2 = pd.read_csv('sortedbytotalvaccines.csv')
     data4 = pd.read_csv('worldcovidcases.csv')
     df = data2[["vaccines", "country"]]
-    df.head()
     dict_ = {}
     for vaccine in df.vaccines.unique():
         dict_[vaccine] = [df["country"][j] for j in df[df["vaccines"] == vaccine].index]
@@ -24,17 +23,17 @@ def main():
 
     print("Enter 1 to display Total Vaccinations by Country")
     print("Enter 2 to display Vaccination Manufacturers used by Country")
-    print("Enter 3 to display visualisation of Total Covid-19 Cases Worldwide ")
+    print("Enter 3 to display latest visualization of Total Covid-19 Cases Worldwide ")
     print("Enter 4 to display Total Covid-19 Cases by Country in a BAR diagram")
-    print("Enter 5 to display visualisation of Live Total Covid-19 Cases by Country ")
+    print("Enter 5 to display visualization of Live Total Covid-19 Cases by Country ")
 
     option = input("Please select from the available options to visualize data: ")
     while option not in ['1', '2', '3', '4', '5']:
         print("Enter 1 to display Total Vaccinations by Country")
         print("Enter 2 to display Vaccination Manufacturers used by Country")
-        print("Enter 3 to display visualisation of Total Covid-19 Cases Worldwide ")
+        print("Enter 3 to display latest visualization of Total Covid-19 Cases Worldwide ")
         print("Enter 4 to display Total Covid-19 Cases by Country in a BAR diagram")
-        print("Enter 5 to display visualisation of Live Total Covid-19 Cases by Country ")
+        print("Enter 5 to display visualization of Live Total Covid-19 Cases by Country ")
         option = input("Please select a valid option from the list to visualize data: ")
 
     """
@@ -42,36 +41,88 @@ def main():
     colored region mark on a map.
     """
     if option == '1':
-        vaccine_map = px.choropleth(data2, locations='iso_code', color='total_vaccinations')
-        vaccine_map.update_layout(height=500, margin={"r": 0, "t": 0, "l": 0, "b": 0})
+        vaccine_map = px.choropleth(data2, hover_name='country', locations='iso_code', color='total_vaccinations', color_discrete_sequence=px.colors.qualitative.Prism, hover_data=['total_vaccinations', 'people_vaccinated', 'vaccines'])
+        vaccine_map.update_layout(title='Total Vaccinations by Country', height=500, margin={"r": 0, "t": 0, "l": 0, "b": 0})
         vaccine_map.show()
     if option == '2':
-        vaccine_map = px.choropleth(data2, locations='iso_code', color='vaccines')
+        vaccine_map = px.choropleth(data2, locations='iso_code', color='vaccines', color_discrete_sequence=px.colors.qualitative.Antique, hover_name='country', hover_data=['total_vaccinations', 'people_vaccinated', 'vaccines'])
         vaccine_map.update_layout(height=500, margin={"r": 0, "t": 0, "l": 0, "b": 0})
         vaccine_map.show()
     if option == '3':
-        vaccine_map = px.choropleth(data4, title='Total Covid Cases World Wide', locations='iso_code',
-                                    hover_name="Country", range_color=(1000, 10000000), color='Total_Cases',
-                                    color_continuous_scale='Viridis')
-        vaccine_map.update_layout(height=500, title="Total Covid 19 World Wide Cases",
-                                  margin={"r": 0, "t": 0, "l": 0, "b": 0})
-        vaccine_map.update_layout(title="Total Covid 19 World Wide Cases")
-        vaccine_map.show()
-    """    
-    In a bar plot, each row of `data_frame` is represented as a rectangular mark.
-    """
+        url = "https://covid-19-tracking.p.rapidapi.com/v1"
+        headers = {
+            'x-rapidapi-key': "431a9d91famsh03249337403e0d5p1ca757jsn20736c1461a3",
+            'x-rapidapi-host': "covid-19-tracking.p.rapidapi.com"
+        }
+        try:
+            response = requests.request("GET", url, headers=headers)
+            print(response.text)
+            parse_json = json.loads(response.text)
+            df = pd.read_json(response.text, dtype={"Country_text": str})
+            # remove front and ending blank spaces
+            df = df.replace({"^\s*|\s*$": ""}, regex=True)
+            # if there remained only empty string "", change to Nan
+            df = df.replace({"N/A": "0"})
+            df["Active Cases_text"] = pd.to_numeric(df["Active Cases_text"].str.replace(',', ''))
+            df["New Cases_text"] = pd.to_numeric((df["New Cases_text"]).str.replace(',', ''))
+            # df["New Deaths_text"] = pd.to_numeric((df["New Deaths_text"]).str.replace('', ''))
+            df["Total Cases_text"] = pd.to_numeric(df["Total Cases_text"].str.replace(',', ''))
+            df["Total Deaths_text"] = pd.to_numeric((df["Total Deaths_text"]).str.replace(',', ''))
+            df["Total Recovered_text"] = pd.to_numeric((df["Total Recovered_text"]).str.replace(',', ''))
+            print(df.head())
+            df = df.iloc[1:222, :]
+            # delete world cases row and last row
+            country_map = px.choropleth(df, locations='Country_text', color='Total Cases_text', range_color=(1000, 10000000),
+                                        color_discrete_sequence=px.colors.qualitative.Vivid,
+                                        locationmode="country names",
+                                        hover_name='Country_text',
+                                        hover_data=['Total Cases_text', 'Total Recovered_text', 'Active Cases_text',
+                                                    'Total Deaths_text'], color_continuous_scale='Viridis')
+            country_map.update_layout(height=500, title='Total Covid 19 Country Wide Data',
+                                      margin={"r": 0, "t": 0, "l": 0, "b": 0})
+            country_map.show()
+        except Exception as inst:
+            print("Oops!", sys.exc_info()[0], "occurred.", inst)
+            print("Please try other options this time around :)")
     if option == '4':
-        fig = px.bar(data4, title='Total Covid-19 Cases', x='Total_Cases', y='Country', hover_name='Country',
-                     color='Country', color_discrete_sequence=px.colors.qualitative.Prism, facet_row_spacing=0.9)
-        fig.show()
+        url = "https://covid-19-tracking.p.rapidapi.com/v1"
+        headers = {
+            'x-rapidapi-key': "431a9d91famsh03249337403e0d5p1ca757jsn20736c1461a3",
+            'x-rapidapi-host': "covid-19-tracking.p.rapidapi.com"
+        }
+        try:
+            response = requests.request("GET", url, headers=headers)
+            print(response.text)
+            parse_json = json.loads(response.text)
+            df = pd.read_json(response.text, dtype={"Country_text": str})
+            df = df.replace({"^\s*|\s*$": ""}, regex=True)
+            df = df.replace({"N/A": "0"})
+            df["Active Cases_text"] = pd.to_numeric((df["Active Cases_text"]).str.replace(',', ''))
+            df["New Cases_text"] = pd.to_numeric((df["New Cases_text"]).str.replace(',', ''))
+            # df["New Deaths_text"] = pd.to_numeric((df["New Deaths_text"]).str.replace('', ''))
+            df["Total Cases_text"] = pd.to_numeric((df["Total Cases_text"]).str.replace(',', ''))
+            df["Total Deaths_text"] = pd.to_numeric((df["Total Deaths_text"]).str.replace(',', ''))
+            df["Total Recovered_text"] = pd.to_numeric((df["Total Recovered_text"]).str.replace(',', ''))
+            df1 = df.rename(columns={'Country_text': 'Country'}, inplace=False)
+            df = df.iloc[1:222, :]
+            print(df)
+            # delete world cases row
+            fig = px.scatter_polar(df, r="Total Cases_text", size='Total Cases_text', hover_name='Country_text',
+                                   hover_data=['Total Cases_text', 'Total Deaths_text'], color='Total Cases_text',
+                                   color_discrete_sequence=px.colors.qualitative.Prism)
+            fig.show()
+        except Exception as inst:
+            print("Oops!", sys.exc_info()[0], "occurred.", inst)
+            print("Please try other options this time around :)")
+        #fig = px.bar(df, title='Total Covid-19 Cases', x='Total Cases_text', y='Country_text', hover_name='Country_text', color='Country_text', color_discrete_sequence=px.colors.qualitative.Prism, facet_row_spacing=0.9)
+        #fig = px.bar_polar(df, title='Total Covid-19 Cases', range_color=(1000, 10000000), r='Country_text', hover_name='Country_text', hover_data=['Total Cases_text', 'Total Deaths_text', 'Total Recovered_text'], color='Total Cases_text', color_discrete_sequence=px.colors.qualitative.Prism)
     if option == '5':
         country = input("Enter a country name to see latest COVID-19 details(eg- spain): ")
         url = "https://covid-19-data.p.rapidapi.com/country"
         querystring = {"name": str(country)}
         headers = {
             'x-rapidapi-key': "431a9d91famsh03249337403e0d5p1ca757jsn20736c1461a3",
-            'x-rapidapi-host': "covid-19-data.p.rapidapi.com"
-        }
+            'x-rapidapi-host': "covid-19-data.p.rapidapi.com"}
         try:
             response = requests.request("GET", url, headers=headers, params=querystring)
             print(response.text)
@@ -89,11 +140,10 @@ def main():
                                   margin={"r": 0, "t": 0, "l": 0, "b": 0})
             country_map.add_bar(x=x, y=y, offset=-10, hovertext='Confirmed Cases/Total Deaths', text='Total Cases')
             country_map.show()
-        except:
-            print("Oops!", sys.exc_info()[0], "occurred.")
+        except Exception as inst:
+            print("Oops!", sys.exc_info()[0], "occurred.", inst)
             print("Please try other options this time around :)")
         
-
 
 if __name__ == '__main__':
     main()
