@@ -1,6 +1,8 @@
 # CodeInPlace
 ## Final Assignment Project submitted for Code in Place Stanford Program
 
+### A Data Science program to analyse and visualize COVID-19 data using .csv file and api's to get latest case data. To accomplish this python has libraries like "PLOTLY", which gives us tools like maps, bars, scatter_polar figures etc. 
+
 ### Run the project.py file and you are presented with below options.
 
 #### Type 1 and press enter.
